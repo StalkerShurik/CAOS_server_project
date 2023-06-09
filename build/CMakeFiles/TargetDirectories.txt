@@ -1,0 +1,4 @@
+/home/alexander_gaponov/CLionProjects/CAOS_server_project/build/CMakeFiles/server_caos.dir
+/home/alexander_gaponov/CLionProjects/CAOS_server_project/build/CMakeFiles/client_caos.dir
+/home/alexander_gaponov/CLionProjects/CAOS_server_project/build/CMakeFiles/edit_cache.dir
+/home/alexander_gaponov/CLionProjects/CAOS_server_project/build/CMakeFiles/rebuild_cache.dir
