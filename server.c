@@ -10,8 +10,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include <wait.h>
 
-enum { BATCH_SIZE = 100, BUFF_SIZE = 1024 };
+enum { BATCH_SIZE = 1000, BUFF_SIZE = 1024 };
 
 int create_listener(char* service) {
     struct addrinfo *res = NULL;
@@ -83,15 +84,21 @@ void command_spawn(int connection_read) {
     char *args[BUFF_SIZE];
     for (int i = 0; i < arg_cnt; ++i) {
         args[i] = calloc(BUFF_SIZE, sizeof(char));
-        read_string(connection_read, args[i]);
+        read(connection_read, args[i], BATCH_SIZE);
     }
     dup2(connection_read, STDIN_FILENO);
     dup2(connection_read, STDOUT_FILENO);
-    dup2(connection_read, STDERR_FILENO);
     close(connection_read);
     args[arg_cnt] = NULL;
+    printf("HERE\n");
     execvp(args[0], args);
 }
+
+void kill_zombies() {
+    while(wait(NULL) > 0) {
+        ;;;
+    }
+};
 
 int main(int argc, char *argv[]) {
     create_daemon();
@@ -116,6 +123,7 @@ int main(int argc, char *argv[]) {
             read(connection_read, buff, BATCH_SIZE);
 
             if (strcmp(spawn_command, buff) == 0) {
+                //printf("HERE1\n");
                 command_spawn(connection_read);
             } else {
                 perror("server: unknown command");
@@ -124,6 +132,7 @@ int main(int argc, char *argv[]) {
         } else {
             close(connection_read);
             close(connection_write);
+            kill_zombies();
         }
     }
 }

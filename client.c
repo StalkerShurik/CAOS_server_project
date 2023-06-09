@@ -70,7 +70,7 @@ int sock_read, sock_write;
 
 void *thread_reader(void *ptr) {
     char buff[BUFF_SIZE];
-    ssize_t bytes_read = 0;
+    ssize_t bytes_read;
     while ((bytes_read =  read(sock_read, buff, BATCH_SIZE)) > 0) {
         buff[bytes_read] = '\0';
         printf("%s", buff);
