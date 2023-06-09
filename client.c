@@ -1,11 +1,10 @@
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
+#include <pthread.h>
+#include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <pthread.h>
+#include <unistd.h>
 
 enum { BATCH_SIZE = 1000, BUFF_SIZE = 1024 };
 
@@ -119,8 +118,9 @@ int main(int argc, char* argv[]) {
     pthread_t reader_from_server;
     pthread_create(&reader_from_server, NULL, *thread_reader, NULL);
 
-
-    while (read(STDIN_FILENO, buf, BATCH_SIZE) > 0) {
+    ssize_t bytes_read;
+    while ((bytes_read = read(STDIN_FILENO, buf, BATCH_SIZE)) > 0) {
+        buf[bytes_read] = '\0';
         write_string(sock_write, buf);
     }
 }

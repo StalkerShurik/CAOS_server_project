@@ -1,15 +1,9 @@
-#include <stdio.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/stat.h>
-#include <syslog.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
 #include <string.h>
+#include <unistd.h>
 #include <wait.h>
 
 enum { BATCH_SIZE = 1000, BUFF_SIZE = 1024 };
@@ -63,10 +57,6 @@ void create_daemon() {
     }
 }
 
-void read_string(int sock, char *str) {
-    read(sock, str, BATCH_SIZE);
-}
-
 int str_to_int(char *str) {
     int ans = 0;
     for (int i = 0; i < strlen(str); ++i) {
@@ -90,7 +80,6 @@ void command_spawn(int connection_read) {
     dup2(connection_read, STDOUT_FILENO);
     close(connection_read);
     args[arg_cnt] = NULL;
-    printf("HERE\n");
     execvp(args[0], args);
 }
 
@@ -121,9 +110,7 @@ int main(int argc, char *argv[]) {
             char buff[BUFF_SIZE];
             char spawn_command[] = "spawn";
             read(connection_read, buff, BATCH_SIZE);
-
             if (strcmp(spawn_command, buff) == 0) {
-                //printf("HERE1\n");
                 command_spawn(connection_read);
             } else {
                 perror("server: unknown command");
